@@ -80,6 +80,8 @@ python client_test/test_client.py
 
 You can change the question it asks by editing `DEBUG_PROMPT` in [client_test/test_client.py](client_test/test_client.py).
 
+While it runs, both [client_test/test_client.py](client_test/test_client.py) and [server.py](server.py) log every step to the terminal in real time — the server starting, the session handshake, the available tools, and every single tool call the model makes with its arguments as it happens. The final answer prints separately at the end.
+
 ## Project layout
 
 ```

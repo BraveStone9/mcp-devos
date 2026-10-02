@@ -22,32 +22,44 @@ Prompt sent to the model:
 Something is wrong with the inventory app. Can you investigate and tell me what's broken and why?
 ```
 
-The model was given no other information, no file contents, and no hint about where the bug was. Everything below came from it autonomously calling tools exposed by [server.py](server.py), in this exact order:
+The model was given no other information, no file contents, and no hint about where the bug was. [server.py](server.py) and [client_test/test_client.py](client_test/test_client.py) both log every step live, so this is the actual terminal output of one run, unedited apart from trimming the final answer:
 
 ```
-CALLED: list_dir {}
-CALLED: list_dir {'path': 'buggy_app'}
-CALLED: read_log_file {'filename': 'buggy_app/app.log', 'lines': 100}
-CALLED: read_source_file {'filepath': 'buggy_app/inventory.py'}
+22:49:25 [client] Launching MCP server: server.py
+22:49:25 [client] Connected to server. Initializing MCP session...
+22:49:26 [server] Starting DevOS MCP server (sandbox root: .../mcp_devos/demo)
+22:49:26 [client] Session ready. Available tools: list_dir, read_source_file, git_status, git_diff, git_log, git_last_commit_diff, read_log_file
+22:49:26 [client] Sending prompt to gemini-3.5-flash-lite: "Something is wrong with the inventory app. Can you investigate and tell me what's broken and why?"
+22:49:28 [server] -> list_dir(path='.')
+22:49:28 [server] <- list_dir ok
+22:49:29 [server] -> list_dir(path='buggy_app')
+22:49:29 [server] <- list_dir ok
+22:49:29 [server] -> read_log_file(filename='buggy_app/app.log', lines=100, level_filter=None)
+22:49:29 [server] <- read_log_file ok
+22:49:30 [server] -> read_source_file(filepath='buggy_app/inventory.py')
+22:49:30 [server] <- read_source_file ok
+22:49:32 [client] Received final response from the model.
 ```
 
-It first listed the project root, then the `buggy_app/` subfolder it found, then read the log file, then read the source file the log pointed to. Each step was chosen based on what the previous tool call returned.
+It first listed the project root, then the `buggy_app/` subfolder it found, then read the log file, then read the source file the log pointed to — each step chosen based on what the previous tool call returned, not a fixed script.
 
 Final response from the model:
 
 ```
-I have investigated the inventory app (buggy_app/inventory.py and its log buggy_app/app.log).
+I have investigated the inventory app (buggy_app/inventory.py and its log file buggy_app/app.log). Here is what is broken and why:
 
-### What is broken:
-The application crashes with an IndexError: list index out of range when attempting
-to apply a discount to an item price in apply_discount.
+### What is broken?
+The application crashes with an IndexError: list index out of range inside the
+apply_discount function when trying to calculate and print a discounted price in main().
 
-### Why it's happening:
-1. In main(), the prices list contains 2 elements: [10, 20], which means valid
-   0-based indices are 0 (for 10) and 1 (for 20).
-2. The code calls apply_discount(prices, 2), passing 2 as the discount_index.
-3. Inside apply_discount, it attempts to access prices[2]. Since index 2 is out of
-   bounds for a list of length 2, Python raises an IndexError.
+### Why is it happening?
+1. In main(), a list named prices is defined with two elements: [10, 20]. In Python,
+   lists use 0-based indexing, meaning valid indices for this list are 0 (for 10)
+   and 1 (for 20).
+2. The code then calls apply_discount(prices, 2), passing 2 as the discount_index.
+3. Inside apply_discount, the code attempts to access prices[discount_index]
+   (which evaluates to prices[2]).
+4. Since index 2 does not exist in a 2-element list, Python raises an IndexError.
 ```
 
 This matches the actual bug planted in [demo/buggy_app/inventory.py](demo/buggy_app/inventory.py) and the actual traceback in [demo/buggy_app/app.log](demo/buggy_app/app.log) — the model found and explained it correctly on its own.
