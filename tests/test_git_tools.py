@@ -3,7 +3,13 @@ import subprocess
 import pytest
 
 import tools.git_tools as git_tools
-from tools.git_tools import GitError, get_git_diff, get_git_log, get_git_status
+from tools.git_tools import (
+    GitError,
+    get_git_diff,
+    get_git_log,
+    get_git_status,
+    get_last_commit_diff,
+)
 
 
 def _git(root, *args):
@@ -59,6 +65,16 @@ def test_git_log_respects_count(repo):
     log = get_git_log(1)
     assert "second commit" in log
     assert "initial commit" not in log
+
+
+def test_last_commit_diff_shows_latest_change(repo):
+    (repo / "app.py").write_text("print('v2')")
+    _git(repo, "add", "app.py")
+    _git(repo, "commit", "-m", "second commit")
+
+    diff = get_last_commit_diff()
+    assert "second commit" in diff
+    assert "v2" in diff
 
 
 def test_git_command_fails_outside_a_repo(tmp_path, monkeypatch):

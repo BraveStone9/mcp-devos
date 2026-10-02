@@ -37,3 +37,7 @@ def get_git_diff():
 
 def get_git_log(n=10):
     return _run_git(["log", f"-{int(n)}", "--oneline"])
+
+
+def get_last_commit_diff():
+    return _run_git(["show", "--no-color", "HEAD"])
