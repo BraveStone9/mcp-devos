@@ -110,3 +110,7 @@ for m in client.models.list():
 Pick any current flash model from that list and update `MODEL_NAME` in [client_test/test_client.py](client_test/test_client.py).
 
 **A `503 UNAVAILABLE` / "high demand" error.** This is Google's API being temporarily overloaded, not a bug in this project. Just retry.
+
+---
+
+*Note: parts of this project's code and documentation were produced with the help of an AI assistant (Claude, Anthropic — Sonnet 5 model), used as a development tool throughout the build.*
