@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from functools import wraps
 
@@ -14,12 +15,19 @@ from tools.git_tools import (
 )
 from tools.log_tools import read_log
 
-logging.basicConfig(
-    stream=sys.stderr,
-    level=logging.INFO,
-    format="%(asctime)s [server] %(message)s",
-    datefmt="%H:%M:%S",
+_formatter = logging.Formatter(
+    fmt="%(asctime)s [server] %(message)s", datefmt="%H:%M:%S"
 )
+_handlers = [logging.StreamHandler(sys.stderr)]
+
+_log_file = os.environ.get("DEVOS_LOG_FILE")
+if _log_file:
+    _handlers.append(logging.FileHandler(_log_file, mode="a", encoding="utf-8"))
+
+for _handler in _handlers:
+    _handler.setFormatter(_formatter)
+
+logging.basicConfig(level=logging.INFO, handlers=_handlers)
 logger = logging.getLogger("devos.server")
 
 mcp = MCPServer("devos")

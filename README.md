@@ -82,6 +82,8 @@ You can change the question it asks by editing `DEBUG_PROMPT` in [client_test/te
 
 While it runs, both [client_test/test_client.py](client_test/test_client.py) and [server.py](server.py) log every step to the terminal in real time — the server starting, the session handshake, the available tools, and every single tool call the model makes with its arguments as it happens. The final answer prints separately at the end.
 
+Every run also writes that same step-by-step log to a timestamped file under [logs/](logs/), so you can review a run later without having to re-run it. [logs/sample_run.log](logs/sample_run.log) is a real one, kept in the repo so anyone browsing can see an actual execution trace without setting anything up.
+
 ## Project layout
 
 ```
@@ -98,6 +100,8 @@ mcp_devos/
 ├── demo/
 │   └── buggy_app/           # sample app + log used by the debugging demo
 ├── tests/                   # automated tests for the security layer and all tools
+├── logs/
+│   └── sample_run.log       # a real step-by-step log of one full run
 ├── requirements.txt
 └── SAMPLE_OUTPUT.md          # a real captured test run and demo transcript
 ```
@@ -117,3 +121,5 @@ for m in client.models.list():
 Pick any current flash model from that list and update `MODEL_NAME` in [client_test/test_client.py](client_test/test_client.py).
 
 **A `503 UNAVAILABLE` / "high demand" error.** This is Google's API being temporarily overloaded, not a bug in this project. Just retry.
+
+**The run seems stuck with no new log lines appearing for a long time.** The client sets a 60-second request timeout (`REQUEST_TIMEOUT_MS` in [client_test/test_client.py](client_test/test_client.py)), so a stalled API call should fail with a clear error rather than hang forever. If you still see it hang past that, check the latest file in [logs/](logs/) to see exactly which step it stopped on.

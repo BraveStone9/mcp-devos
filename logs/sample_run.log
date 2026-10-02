@@ -1,0 +1,14 @@
+23:09:01 [client] Launching MCP server: server.py
+23:09:01 [client] Connected to server. Initializing MCP session...
+23:09:03 [server] Starting DevOS MCP server (sandbox root: D:\2026\Projects\MCP\mcp_devos\demo)
+23:09:03 [client] Session ready. Available tools: list_dir, read_source_file, git_status, git_diff, git_log, git_last_commit_diff, read_log_file
+23:09:03 [client] Sending prompt to gemini-3.5-flash-lite: "Something is wrong with the inventory app. Can you investigate and tell me what's broken and why?"
+23:09:04 [server] -> list_dir(path='.')
+23:09:04 [server] <- list_dir ok
+23:09:05 [server] -> list_dir(path='buggy_app')
+23:09:05 [server] <- list_dir ok
+23:09:26 [server] -> read_log_file(filename='buggy_app/app.log', lines=100, level_filter=None)
+23:09:26 [server] <- read_log_file ok
+23:09:27 [server] -> read_source_file(filepath='buggy_app/inventory.py')
+23:09:27 [server] <- read_source_file ok
+23:09:28 [client] Received final response from the model.
