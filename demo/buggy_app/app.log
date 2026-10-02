@@ -1,0 +1,12 @@
+2026-01-15 09:12:01 INFO Starting inventory processor
+2026-01-15 09:12:01 INFO Loaded 2 items
+2026-01-15 09:12:02 INFO Average price calculated: 15.0
+2026-01-15 09:12:02 ERROR Unhandled exception while applying discount
+2026-01-15 09:12:02 ERROR Traceback (most recent call last):
+2026-01-15 09:12:02 ERROR   File "inventory.py", line 24, in <module>
+2026-01-15 09:12:02 ERROR     main()
+2026-01-15 09:12:02 ERROR   File "inventory.py", line 19, in main
+2026-01-15 09:12:02 ERROR     discounted = apply_discount(prices, 2)
+2026-01-15 09:12:02 ERROR   File "inventory.py", line 7, in apply_discount
+2026-01-15 09:12:02 ERROR     return prices[discount_index] * 0.9
+2026-01-15 09:12:02 ERROR IndexError: list index out of range

@@ -16,7 +16,7 @@ def main():
     print(f"Average price: {avg}")
 
     prices = [10, 20]
-    discounted = apply_discount(prices, 1)
+    discounted = apply_discount(prices, 2)
     print(f"Discounted price: {discounted}")
 
 
