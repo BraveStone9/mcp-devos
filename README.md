@@ -1,6 +1,10 @@
-# DevOS MCP
+# Local Developer OS (MCP Server Integration)
 
 A Model Context Protocol (MCP) server that gives an LLM client safe, sandboxed access to a local project: its files, its logs, and its Git history. It's built so an AI agent can investigate a real debugging problem — reading logs, inspecting source files, checking what changed recently in Git — without ever being able to touch anything outside one designated project folder.
+
+**What this isn't:** This is a debugging assistant, not a code gatekeeper. It investigates problems that already exist rather than preventing bad code from being committed — there's no CI gate, no pre-commit hook, no scanning step.
+
+Built using Claude Code as part of my normal development workflow.
 
 Don't want to set it up yourself? See [SAMPLE_OUTPUT.md](SAMPLE_OUTPUT.md) for a real captured test run and a real captured debugging session, including exactly which tools the model called and in what order.
 
@@ -34,7 +38,7 @@ Every filesystem and log tool call passes through [security.py](security.py) bef
 - **File-type and size limits.** Only a small set of text-based extensions are readable (`.py`, `.txt`, `.log`, `.md`, `.json`, `.yaml`, `.yml`, `.toml`, `.cfg`, `.ini`, `.csv`), and files over 5 MB are rejected, so the agent can't be pointed at a huge or unreadable binary file.
 - **Safe Git execution.** [tools/git_tools.py](tools/git_tools.py) runs Git as a fixed argument list through `subprocess`, never through a shell string, so there's no command-injection path through a crafted input.
 
-This is covered by an automated test suite in [tests/](tests/), including attempts at path traversal, symlink escapes, disallowed file types, oversized files, and command injection via Git arguments — see [SAMPLE_OUTPUT.md](SAMPLE_OUTPUT.md) for the actual passing results.
+This is covered by 38 automated tests in [tests/](tests/), including attempts at path traversal, symlink escapes, disallowed file types, oversized files, and command injection via Git arguments — see [SAMPLE_OUTPUT.md](SAMPLE_OUTPUT.md) for the actual passing results.
 
 ## The demo
 
@@ -49,7 +53,8 @@ Requirements: Python 3.10+, Git, and a Gemini API key (a free one from Google AI
 ```bash
 # from inside this folder
 python -m venv venv
-venv\Scripts\Activate.ps1      # Windows PowerShell
+source venv/bin/activate      # macOS / Linux
+venv\Scripts\Activate.ps1     # Windows PowerShell
 pip install -r requirements.txt
 ```
 
@@ -81,7 +86,7 @@ You can change the question it asks by editing `DEBUG_PROMPT` in [client_test/te
 mcp_devos/
 ├── server.py              # MCP server: registers all tools, runs over stdio
 ├── security.py            # sandboxing / path validation — the security boundary
-├── config.py               # sandbox root, file size limit, allowed extensions
+├── config.py              # sandbox root, file size limit, allowed extensions
 ├── tools/
 │   ├── fs_tools.py          # list_directory, read_file
 │   ├── git_tools.py         # git status / diff / log / last-commit-diff
@@ -110,7 +115,3 @@ for m in client.models.list():
 Pick any current flash model from that list and update `MODEL_NAME` in [client_test/test_client.py](client_test/test_client.py).
 
 **A `503 UNAVAILABLE` / "high demand" error.** This is Google's API being temporarily overloaded, not a bug in this project. Just retry.
-
----
-
-*Note: parts of this project's code and documentation were produced with the help of an AI assistant (Claude, Anthropic — Sonnet 5 model), used as a development tool throughout the build.*
